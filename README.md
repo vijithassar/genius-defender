@@ -8,7 +8,7 @@ The included [wp-genius-defender.php](./wp-genius-defender.php) file allows Word
 
 # Very Important Questions
 
-Please review the extensive [release notes](http://www.vijithassar.com/2461/how-to-break-genius-annotations).
+Please review the extensive [release notes](http://www.vijithassar.com/2461/how-to-block-genius-annotations).
 
 # Usage
 
@@ -32,6 +32,6 @@ $scrambled_html = $scrambler->html($html_content);
 
 # Notes
 
-- Code execution is reasonably fast, but your pages will take longer to load because of all the extra characters being added. This tool completely breaks at around a million words, but is totally usable for anything under a few thousand.
+- Code execution is okay since [](), but your pages will take longer to load because of all the extra characters being added. This tool completely breaks at around a million words, but is totally usable for anything under a few thousand.
 
 - The html() method may pad whitespace characters like spaces and newlines if they occur in between HTML tags. If this is a problem, you'll need to make sure the HTML string being scrambled doesn't include whitespace between adjacent tags, such as line breaks separating paragraphs and divs.
