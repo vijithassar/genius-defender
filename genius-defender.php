@@ -5,7 +5,7 @@ class GeniusDefender {
   // THE FIRST METHOD IS THE HEART OF THE WHOLE THING!
   // The other things are just PHP-specific convenience wrappers.
 
-  // obfuscate a unicode string
+  // scramble a Unicode string
   public function string($text) {
     $scrambled = '';
     // split string to characters
@@ -25,41 +25,40 @@ class GeniusDefender {
     return $scrambled;
   }
 
-  // obfuscate a DOM node object
-  public function element($node) {
-    // look up tag name
-    $tag = $node->parentNode->tagName;
-    if ($tag) {
-      // scramble text and return wrapped in tags
-      $scrambled_text = $this->string($node->textContent);
-      return "<$tag>$scrambled_text</$tag>";
-    }
+  // scramble text content in a DOM node
+  private function node($node) {
+    $scrambled_text = $this->string($node->textContent);
+    $node->nodeValue = $scrambled_text;
+    return $node;
   }
 
-  // recursively obfuscate a DOM document object
-  public function dom($dom) {
-    $results = '';
-    foreach ($dom->childNodes as $node) {
-      if ($node->hasChildNodes()) {
-        // recursion
-        $this->dom($node);
-      } else {
-        // obfuscate
-        $result = $this->element($node);
-        $results .= $result;
+  // recursively scramble a DOM tree
+  private function dom($element) {
+    // recursively scramble child nodes
+    if ($element->childNodes) {
+      foreach ($element->childNodes as $child_node) {
+        $element->replaceChild($this->dom($child_node), $child_node);
       }
+      return $element;
     }
-    echo $results;
-    return $results;
+    return $this->node($element);
   }
 
-  // obfuscate a string of HTML
+  // scramble a string of HTML
   public function html($html) {
+    // make sure string is unicode-safe
+    $unicode_html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
     // parse string to DOM document object
     $dom = new DOMDocument('1.0', 'utf-8');
+    $dom->loadHTML($unicode_html);
     $dom->preserveWhiteSpace = false;
-    $dom->loadHTML($html);
-    // scramble
-    return $this->dom($dom);
+    $dom->formatOutput = true;
+    $xpath = new DOMXPath($dom);
+    $body = $xpath->query('//body')->item(0);
+    // walk DOM and scramble all node content
+    $scrambled_dom = $this->dom($body);
+    $scrambled_string = $dom->saveHTML($scrambled_dom);
+    // render DOM object to string
+    return $scrambled_string;
   }
 }
